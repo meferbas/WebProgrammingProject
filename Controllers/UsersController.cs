@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace AirlineSeatReservationSystem.Controllers
@@ -30,11 +31,13 @@ namespace AirlineSeatReservationSystem.Controllers
         {
             return View(await _userRepository.Users.ToListAsync());
         }
+        // [Authorize]
         public IActionResult SignUp()
         {
             return View();
         }
         [HttpPost]
+        // [Authorize]
         public async Task<IActionResult> SignUp(SignUpViewModel model)
         {
             if (ModelState.IsValid)
@@ -67,7 +70,7 @@ namespace AirlineSeatReservationSystem.Controllers
         {
             if (User.Identity!.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Flight");
             }
             return View();
         }
@@ -103,7 +106,7 @@ namespace AirlineSeatReservationSystem.Controllers
                         new ClaimsPrincipal(claimsIdentity),
                         authProperties
                     );
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Index", "Flight");
                 }
                 else
                 {
