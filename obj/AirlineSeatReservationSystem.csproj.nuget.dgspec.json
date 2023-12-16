@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Efe\\Desktop\\Web-Programming-main\\AirlineSeatReservationSystem.csproj": {}
+    "C:\\Users\\Efe\\Desktop\\WebProgrammingProject\\AirlineSeatReservationSystem.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Efe\\Desktop\\Web-Programming-main\\AirlineSeatReservationSystem.csproj": {
+    "C:\\Users\\Efe\\Desktop\\WebProgrammingProject\\AirlineSeatReservationSystem.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Efe\\Desktop\\Web-Programming-main\\AirlineSeatReservationSystem.csproj",
+        "projectUniqueName": "C:\\Users\\Efe\\Desktop\\WebProgrammingProject\\AirlineSeatReservationSystem.csproj",
         "projectName": "AirlineSeatReservationSystem",
-        "projectPath": "C:\\Users\\Efe\\Desktop\\Web-Programming-main\\AirlineSeatReservationSystem.csproj",
+        "projectPath": "C:\\Users\\Efe\\Desktop\\WebProgrammingProject\\AirlineSeatReservationSystem.csproj",
         "packagesPath": "C:\\Users\\Efe\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Efe\\Desktop\\Web-Programming-main\\obj\\",
+        "outputPath": "C:\\Users\\Efe\\Desktop\\WebProgrammingProject\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

@@ -11,7 +11,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace AirlineSeatReservationSystem.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231212224348_InitialCreate")]
+    [Migration("20231216162358_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -55,6 +55,30 @@ namespace AirlineSeatReservationSystem.Migrations
                     b.ToTable("Flights");
                 });
 
+            modelBuilder.Entity("AirlineSeatReservationSystem.Entity.Seat", b =>
+                {
+                    b.Property<int>("SeatId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("SeatId"));
+
+                    b.Property<int>("FlightId")
+                        .HasColumnType("integer");
+
+                    b.Property<bool>("IsOccupied")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("SeatNumber")
+                        .HasColumnType("text");
+
+                    b.HasKey("SeatId");
+
+                    b.HasIndex("FlightId");
+
+                    b.ToTable("Seats");
+                });
+
             modelBuilder.Entity("AirlineSeatReservationSystem.Entity.User", b =>
                 {
                     b.Property<int>("UserNo")
@@ -78,6 +102,17 @@ namespace AirlineSeatReservationSystem.Migrations
                     b.HasKey("UserNo");
 
                     b.ToTable("Users");
+                });
+
+            modelBuilder.Entity("AirlineSeatReservationSystem.Entity.Seat", b =>
+                {
+                    b.HasOne("AirlineSeatReservationSystem.Entity.Flight", "Flight")
+                        .WithMany()
+                        .HasForeignKey("FlightId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Flight");
                 });
 #pragma warning restore 612, 618
         }
