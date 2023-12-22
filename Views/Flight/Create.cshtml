@@ -1,8 +1,9 @@
 @model FlightCreateViewModel
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" />
 
-<div class="row">
-  <div class="col-12">
-    <div class="bg-white p-4"></div>
+
+  <div class="container col-12">
+    <div class="p-4"></div>
     <h2>Flight Create</h2>
     <form action="Create" method="post" novalidate>
       <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -74,4 +75,4 @@
       <button type="submit" class="btn btn-primary">Add</button>
     </form>
   </div>
-</div>
+

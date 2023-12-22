@@ -1,0 +1,39 @@
+@model MyBookingsViewModel
+
+<h2 class="text-white py-3">My Bookings</h2>
+<link rel="stylesheet" href="~/css/home.css" asp-append-version="true" /> 
+@if (Model.Bookings.Any()) {
+<div class="row">
+  <div class="col-12 py-5">
+    <br/>
+    <table class="table table-bordered table-dark">
+      <thead>
+        <tr>
+          <th>From</th>
+          <th>To</th>
+          <th>Departure Time</th>
+          <th>Departure Date</th>
+          <th>Return Date</th>
+          <th>Seat Number</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @foreach(var booking in Model.Bookings) {
+        <tr>
+          <td>@booking.Flight.From</td>
+          <td>@booking.Flight.To</td>
+          <td>@booking.Flight.Time</td>
+          <td>@booking.Flight.Depart</td>
+          <td>@booking.Flight.Return</td>
+          <td>@booking.Seat.SeatNumber</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+} else {
+<p>No bookings found.</p>
+}

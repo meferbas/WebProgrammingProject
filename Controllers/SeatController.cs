@@ -72,45 +72,33 @@ namespace AirlineSeatReservationSystem.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> ChooseSeats(ChooseSeatsViewModel model)
+        public async Task<IActionResult> ChooseSeats(ChooseSeatsViewModel model, int flightId)
         {
             await _seatRepository.ReserveSeat(model.SelectedSeat);
-
             TempData["SuccessMessage"] = "Uçuşunuz başarılı bir şekilde oluşturuldu.";
-            return RedirectToAction("Index", "Flight"); // Ana sayfaya yönlendir
+
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim != null)
+            {
+                var userNo = int.Parse(userIdClaim.Value);
+                var booking = new Booking
+                {
+                    UserNo = userNo,
+                    FlightId = flightId,
+                    SeatId = model.SelectedSeat,
+
+                };
+
+                _bookingRepository.Add(booking);
+                _bookingRepository.SaveChanges(); // Eğer kaydetme işlemi async ise
+
+                return RedirectToAction("Index", "Flight");
+            }
+            else
+            {
+                return Json(new { success = false, message = "User not authenticated." });
+            }
         }
-        // [HttpPost]
-        // public async Task<IActionResult> ChooseSeats(ChooseSeatsViewModel model)
-        // {
-
-
-        //     var userIdClaim = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier);
-
-
-        //     var userNo = int.Parse(userIdClaim.Value);
-        //     var selectedSeatId = model.SelectedSeat;
-
-        //     // Uçuşun varlığını kontrol et
-
-
-        //     // Koltuk rezervasyonunu denetle
-
-
-
-        //     // Yeni rezervasyonu oluştur ve kaydet
-        //     var booking = new Booking
-        //     {
-        //         SeatId = selectedSeatId,
-        //         BookingDate = DateTime.UtcNow
-        //     };
-
-        //     _bookingRepository.Add(booking);
-        //     _bookingRepository.SaveChanges();
-        //     await _seatRepository.ReserveSeat(selectedSeatId);
-
-        //     TempData["SuccessMessage"] = "Uçuşunuz başarılı bir şekilde oluşturuldu.";
-        //     return RedirectToAction("Index", "Flight");
-        // }
 
 
 

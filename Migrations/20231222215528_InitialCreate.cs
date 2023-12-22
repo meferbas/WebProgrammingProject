@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -75,9 +74,7 @@ namespace AirlineSeatReservationSystem.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserNo = table.Column<int>(type: "integer", nullable: false),
                     FlightId = table.Column<int>(type: "integer", nullable: false),
-                    SeatId = table.Column<int>(type: "integer", nullable: false),
-                    BookingDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UserNo1 = table.Column<int>(type: "integer", nullable: false)
+                    SeatId = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -94,12 +91,6 @@ namespace AirlineSeatReservationSystem.Migrations
                         principalTable: "Seats",
                         principalColumn: "SeatId",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Bookings_Users_UserNo1",
-                        column: x => x.UserNo1,
-                        principalTable: "Users",
-                        principalColumn: "UserNo",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -111,11 +102,6 @@ namespace AirlineSeatReservationSystem.Migrations
                 name: "IX_Bookings_SeatId",
                 table: "Bookings",
                 column: "SeatId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Bookings_UserNo1",
-                table: "Bookings",
-                column: "UserNo1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Seats_FlightId",
@@ -130,10 +116,10 @@ namespace AirlineSeatReservationSystem.Migrations
                 name: "Bookings");
 
             migrationBuilder.DropTable(
-                name: "Seats");
+                name: "Users");
 
             migrationBuilder.DropTable(
-                name: "Users");
+                name: "Seats");
 
             migrationBuilder.DropTable(
                 name: "Flights");
