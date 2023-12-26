@@ -18,7 +18,6 @@ public class BookingController : Controller
 
     private readonly LanguageService _localization;
 
-
     public BookingController(IBookingRepository repository, ILogger<BookingController> logger, LanguageService localization)
     {
         _repository = repository;
@@ -40,8 +39,7 @@ public class BookingController : Controller
         var currentCulture = Thread.CurrentThread.CurrentCulture.Name;
         return View();
     }
-
-      public IActionResult ChangeLanguage(string culture)
+    public IActionResult ChangeLanguage(string culture)
     {
         Response.Cookies.Append(CookieRequestCultureProvider.DefaultCookieName, CookieRequestCultureProvider.MakeCookieValue(new RequestCulture(culture)),
         new CookieOptions()

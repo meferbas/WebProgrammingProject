@@ -6,16 +6,14 @@ using AirlineSeatReservationSystem.Data.Abstract;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Localization;
-using System.Net;
 using AirlineSeatReservationSystem.Services;
+using Microsoft.AspNetCore.Localization;
 
 namespace AirlineSeatReservationSystem.Controllers;
 
 public class FlightController : Controller
 {
     private IFlightRepository _repository;
-
     private readonly ILogger<FlightController> _logger;
     private readonly LanguageService _localization;
     public FlightController(IFlightRepository repository, ILogger<FlightController> logger, LanguageService localization)
@@ -46,7 +44,7 @@ public class FlightController : Controller
         ViewBag.NewFlight = _localization.Getkey("New Flight").Value;
         ViewBag.Seat = _localization.Getkey("Seat").Value;
         ViewBag.Choose = _localization.Getkey("Choose").Value;
-        
+
 
         var currentCulture = Thread.CurrentThread.CurrentCulture.Name;
         return View();
@@ -61,7 +59,6 @@ public class FlightController : Controller
         });
         return Redirect(Request.Headers["Referer"].ToString());
     }
-
     [HttpPost]
     public async Task<IActionResult> Index(FlightViewModel model)
     {
@@ -121,8 +118,6 @@ public class FlightController : Controller
         return View();
     }
 
-
-    [Authorize]
     public async Task<IActionResult> SearchFlights(FlightViewModel model)
     {
 
@@ -133,7 +128,6 @@ public class FlightController : Controller
 
             // Ortak kriterler
             query = query.Where(f => f.From == model.From && f.To == model.To && f.Guest == model.Guest);
-
 
             // One Way ise Return tarihini dikkate alma.
             if (model.IsOneWay)

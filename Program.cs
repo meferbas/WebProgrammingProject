@@ -4,12 +4,15 @@ using AirlineSeatReservationSystem.Data.Abstract;
 using AirlineSeatReservationSystem.Data.Concrete;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 using AirlineSeatReservationSystem.Services;
 using System.Reflection;
 using System.Globalization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.Extensions.Options;
-
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,47 +40,54 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 });
 #endregion
 
+// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<DataContext>(options =>
 {
+    options.UseNpgsql(builder.Configuration.GetConnectionString("database"));
+});
 
-
-    options.UseNpgsql(builder.Configuration["ConnectionStrings:database"]);
-}
-);
-
-builder.Services.AddScoped<IUserRepository, EfUserRepository>(); // yeni geldi
+builder.Services.AddScoped<IUserRepository, EfUserRepository>();
 builder.Services.AddScoped<ISeatRepository, EfSeatRepository>();
 builder.Services.AddScoped<IBookingRepository, EfBookingRepository>();
-
-
-// builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(options=>{
-//     options.LoginPath="/Users/SignUp";
-// });
 builder.Services.AddScoped<IFlightRepository, EfFlightRepository>();
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie();
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+    options.LoginPath = "/Users/SignIn";
+})
+.AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+    };
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
-app.UseRouting(); //yeni eklendi
-app.UseAuthentication();
-app.UseAuthorization();
-
 app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

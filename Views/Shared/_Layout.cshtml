@@ -8,15 +8,11 @@
   <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
   <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
   <link rel="stylesheet" href="~/AirlineSeatReservationSystem.styles.css" asp-append-version="true" />
-
-  </style>
 </head>
 
 <body>
 
   <header>
-
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm" style="background-color: #e3f2fd;">
 
       <div class="container-fluid">
@@ -27,80 +23,80 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarColor01">
-          <ul class="navbar-nav ms-auto ">
-            @if (User.Identity!.IsAuthenticated)
+          <ul class="navbar-nav ms-auto">
+          @if (User.Identity!.IsAuthenticated)
+
+          {
+            @if (User.IsInRole("admin"))
 
             {
-              @if (User.IsInRole("admin"))
+              <li class="nav-item">
+                <a class="nav-link" asp-controller="Flight" asp-action="ListFlights">Admin</a>
 
-              {
-                <li class="nav-item">
-                  <a class="nav-link" asp-controller="Flight" asp-action="ListFlights">Admin</a>
+              </li>
+              <!-- <li class="nav-item">
+                <a class="nav-link  " asp-controller="Flight" asp-action="Index">Home</a>
 
-                </li>
-                <!-- <li class="nav-item">
-                                                    <a class="nav-link  " asp-controller="Flight" asp-action="Index">Home</a>
-
-                                                  </li> -->
-                <li class="nav-item">
-                  <a href="" class="nav-link">@User.Identity.Name</a>
-                </li>
-                <li class="nav-item">
-                  <a href="/users/logout" class="nav-link">@_localization.Getkey("Logout").Value</a>
-                </li>
-              }
-
-              else
-
-              {
-
-                <li class="nav-item ">
-                  <a class="nav-link" asp-controller="Booking"
-                    asp-action="MyBookings">@_localization.Getkey("Flights").Value</a>
-
-                </li>
-                <li class="nav-item">
-                  <a href="" class="nav-link">@User.Identity.Name</a>
-                </li>
-                <li class="nav-item custom-nav-spacing">
-                  <a href="/users/logout" class="nav-link">@_localization.Getkey("Logout").Value</a>
-                </li>
-              }
-
-
+              </li> -->
+              <li class="nav-item">
+                <a href="" class="nav-link">@User.Identity.Name</a>
+              </li>
+              <li class="nav-item">
+                <a href="/users/logout" class="nav-link">@_localization.Getkey("Logout").Value</a>
+              </li>
             }
 
             else
+
             {
+
               <li class="nav-item">
-                <a class="nav-link" asp-controller="Users" asp-action="SignUp">@_localization.Getkey("Sign Up").Value</a>
+                <a class="nav-link" asp-controller="Booking" asp-action="MyBookings">@_localization.Getkey("Flights").Value</a>
 
               </li>
               <li class="nav-item">
-                <a class="nav-link" asp-controller="Users" asp-action="SignIn">@_localization.Getkey("Sign In").Value</a>
-
+                <a href="" class="nav-link">@User.Identity.Name</a>
+              </li>
+              <li class="nav-item">
+                <a href="/users/logout" class="nav-link">@_localization.Getkey("Logout").Value</a>
               </li>
             }
 
+
+          }
+
+          else
+
+          {
+            
             <li class="nav-item">
-              <div class="btn-group">
-                <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false">
-                  Dil
-                </button>
-                <div class="dropdown-menu dropdown-menu-end">
-                  <a class="dropdown-item"
-                    href="@Url.Action("ChangeLanguage", "Flight", new { culture = "tr-TR" })">Türkçe</a>
-                  <a class="dropdown-item"
-                    href="@Url.Action("ChangeLanguage", "Flight", new { culture = "en-US" })">English</a>
-                </div>
-              </div>
+              <a class="nav-link" asp-controller="Users" asp-action="SignUp">@_localization.Getkey("Sign Up").Value</a>
 
             </li>
+            <li class="nav-item">
+              <a class="nav-link" asp-controller="Users" asp-action="SignIn">@_localization.Getkey("Sign In").Value</a>
 
-          </ul>
+            </li>
+          }
+
+          <li class="nav-item">
+            <div class="btn-group">
+              <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                Dil
+              </button>
+              <div class="dropdown-menu dropdown-menu-end">
+                <a class="dropdown-item"
+                  href="@Url.Action("ChangeLanguage", "Flight", new { culture = "tr-TR" })">Türkçe</a>
+                <a class="dropdown-item"
+                  href="@Url.Action("ChangeLanguage", "Flight", new { culture = "en-US" })">English</a>
+              </div>
+            </div>
+
+          </li>
+        </ul>
         </div>
-
+        
       </div>
       </div>
     </nav>
@@ -114,8 +110,6 @@
   <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 
   <script src="~/js/site.js" asp-append-version="true"></script>
-
-
   @await RenderSectionAsync("Scripts", required: false)
 </body>
 

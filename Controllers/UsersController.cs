@@ -4,7 +4,8 @@ using AirlineSeatReservationSystem.Data;
 using AirlineSeatReservationSystem.Data.Concrete.Efcore;
 using AirlineSeatReservationSystem.Data.Abstract;
 using AirlineSeatReservationSystem.Entity;
-
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using AirlineSeatReservationSystem.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -13,6 +14,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using AirlineSeatReservationSystem.Services;
 using Microsoft.AspNetCore.Localization;
 
@@ -23,18 +26,25 @@ namespace AirlineSeatReservationSystem.Controllers
     {
 
         private readonly IBookingRepository _bookingRepository;
-        private readonly ISeatRepository _seatRepository;
+        private readonly IConfiguration _configuration;
         private readonly ILogger<UsersController> _logger;
 
         private readonly LanguageService _localization;
+
+        private readonly ISeatRepository _seatRepository;
+
         private readonly IUserRepository _userRepository;
         private readonly IFlightRepository _flightRepository;
-        public UsersController(IBookingRepository bookingRepository, IUserRepository usersRepository, IFlightRepository flightRepository, ISeatRepository seatRepository, ILogger<UsersController> logger, LanguageService localization)
+
+        public object HashHelper { get; private set; }
+
+        public UsersController(IBookingRepository bookingRepository, IUserRepository usersRepository, IFlightRepository flightRepository, ISeatRepository seatRepository, IConfiguration configuration, ILogger<UsersController> logger, LanguageService localization)
         {
             _bookingRepository = bookingRepository;
 
             _userRepository = usersRepository;
             _flightRepository = flightRepository;
+            _configuration = configuration;
 
             _seatRepository = seatRepository;
             _logger = logger;
@@ -66,7 +76,7 @@ namespace AirlineSeatReservationSystem.Controllers
             });
             return Redirect(Request.Headers["Referer"].ToString());
         }
-
+        // [Authorize]
         public IActionResult SignUp()
         {
             return View();
@@ -80,13 +90,14 @@ namespace AirlineSeatReservationSystem.Controllers
                 var user = await _userRepository.Users.FirstOrDefaultAsync(x => x.UserName == model.UserName || x.Email == model.Email);
                 if (user == null)
                 {
+                    var hashedPassword = _userRepository.HashPassword(model.Password);
                     _userRepository.CreateUser(new User
                     {
 
                         UserName = model.UserName,
                         Phone = model.Phone,
                         Email = model.Email,
-                        Password = model.Password,
+                        Password = hashedPassword,
 
                     });
 
@@ -119,38 +130,54 @@ namespace AirlineSeatReservationSystem.Controllers
         {
             if (ModelState.IsValid)
             {
-                var isUser = _userRepository.Users.FirstOrDefault(x => x.Email == model.Email && x.Password == model.Password);
-                if (isUser != null)
+                var user = await _userRepository.Users.FirstOrDefaultAsync(x => x.Email == model.Email);
+                if (user != null)
                 {
-                    var useClaims = new List<Claim>();
-                    useClaims.Add(new Claim(ClaimTypes.NameIdentifier, isUser.UserNo.ToString()));
-                    useClaims.Add(new Claim(ClaimTypes.Name, isUser.UserName ?? ""));
-                    useClaims.Add(new Claim(ClaimTypes.NameIdentifier, isUser.Email ?? ""));
-                    if (isUser.Email == "g211210013@sakarya.edu.tr" && isUser.Password == "sau" || isUser.Email == "g201210093@sakarya.edu.tr" && isUser.Password == "sau")
+                    // Admin yetkisi kontrolü
+                    bool isAdmin = (user.Email == "g211210013@sakarya.edu.tr" || user.Email == "g201210093@sakarya.edu.tr")
+                                   && _userRepository.VerifyPassword("sau", user.Password);
+
+                    // Kullanıcı veya admin için şifre doğrulaması
+                    if ((isAdmin && _userRepository.VerifyPassword("sau", user.Password)) ||
+                        (!isAdmin && _userRepository.VerifyPassword(model.Password, user.Password)))
                     {
-                        useClaims.Add(new Claim(ClaimTypes.Role, "admin"));
+                        var userClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.NameIdentifier, user.UserNo.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.Email, user.Email)
+                };
+
+                        if (isAdmin)
+                        {
+                            userClaims.Add(new Claim(ClaimTypes.Role, "admin"));
+                        }
+
+                        var claimsIdentity = new ClaimsIdentity(userClaims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var authProperties = new AuthenticationProperties
+                        {
+                            IsPersistent = true
+                        };
+
+                        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
+                            authProperties
+                        );
+
+
+                        return RedirectToAction("Index", "Flight");
                     }
-                    var claimsIdentity = new ClaimsIdentity(useClaims, CookieAuthenticationDefaults.AuthenticationScheme);
-                    var authProperties = new AuthenticationProperties
-                    {
-                        IsPersistent = true
-                    };
-                    await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                    await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity),
-                        authProperties
-                    );
-                    return RedirectToAction("Index", "Flight");
                 }
-                else
-                {
-                    ModelState.AddModelError("", "Email or password is incorrect");
-                }
+
+                ModelState.AddModelError("", "Email or password is incorrect");
             }
 
             return View(model);
         }
+
+
 
 
     }

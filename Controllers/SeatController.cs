@@ -24,9 +24,10 @@ namespace AirlineSeatReservationSystem.Controllers
     {
         private readonly ISeatRepository _seatRepository;
         private readonly IBookingRepository _bookingRepository;
-        private IFlightRepository _repository;
         private readonly ILogger<SeatController> _logger;
         private readonly LanguageService _localization;
+        private IFlightRepository _repository;
+
         private readonly DataContext _context;
         public SeatController(ISeatRepository seatRepository, DataContext context, IFlightRepository repository, IBookingRepository bookingRepository, ILogger<SeatController> logger, LanguageService localization)
         {
@@ -36,9 +37,7 @@ namespace AirlineSeatReservationSystem.Controllers
             _repository = repository;
             _logger = logger;
             _localization = localization;
-
         }
-
         public IActionResult Index()
         {
             ViewBag.Seat = _localization.Getkey("Seat").Value;
@@ -55,7 +54,8 @@ namespace AirlineSeatReservationSystem.Controllers
             });
             return Redirect(Request.Headers["Referer"].ToString());
         }
-        
+        [Authorize]
+
         public IActionResult ChooseSeats(int flightId)
         {
             var flightExists = _context.Flights.Any(f => f.FlightId == flightId);
@@ -93,6 +93,7 @@ namespace AirlineSeatReservationSystem.Controllers
         }
 
 
+        [Authorize]
 
         [HttpPost]
         public async Task<IActionResult> ChooseSeats(ChooseSeatsViewModel model, int flightId)

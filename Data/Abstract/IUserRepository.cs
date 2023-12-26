@@ -7,6 +7,9 @@ namespace  AirlineSeatReservationSystem.Data.Abstract
         IQueryable<User> Users {get;}
 
         void CreateUser(User user);
+        string HashPassword(string password);
+        bool VerifyPassword(string inputPassword, string storedHash);
+
 
     }
 }
