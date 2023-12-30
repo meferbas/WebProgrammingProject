@@ -229,4 +229,8 @@
     <value>Giriş</value>
     <comment>Login</comment>
   </data>
+  <data name="Search Flights" xml:space="preserve">
+    <value>Uçuş Ara</value>
+    <comment>Search Flights</comment>
+  </data>
 </root>

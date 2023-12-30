@@ -44,6 +44,7 @@ public class FlightController : Controller
         ViewBag.NewFlight = _localization.Getkey("New Flight").Value;
         ViewBag.Seat = _localization.Getkey("Seat").Value;
         ViewBag.Choose = _localization.Getkey("Choose").Value;
+        ViewBag.SearchFlights = _localization.Getkey("Search Flights").Value;
 
 
         var currentCulture = Thread.CurrentThread.CurrentCulture.Name;

@@ -229,4 +229,8 @@
     <value>Login</value>
     <comment>Login</comment>
   </data>
+  <data name="Search Flights" xml:space="preserve">
+    <value>Search Flights</value>
+    <comment>Search Flights</comment>
+  </data>
 </root>
